@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>basicagentpy</title>
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#f5f6fb" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#030309" media="(prefers-color-scheme: dark)">
+  <script>
+    (function () {
+      var root = document.documentElement;
+      root.classList.add("js");
+      try {
+        var t = localStorage.getItem("henksys-theme");
+        if (t !== "light" && t !== "dark") {
+          t = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        }
+        root.setAttribute("data-theme", t);
+      } catch (e) {
+        root.setAttribute("data-theme", "light");
+      }
+    })();
+  </script>
+  <link rel="stylesheet" href="/assets/css/tokens.css">
+  <link rel="stylesheet" href="/app.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <div id="token-gate" class="token-gate" hidden>
+    <form id="token-form" class="card token-card">
+      <svg class="brand-mark" viewBox="0 0 120 104" aria-hidden="true" focusable="false"><path d="M57 2 3 102h54z" fill="var(--mark-1)"/><path d="M63 2l23 42H63z" fill="var(--mark-2)"/><path d="M63 50h26l28 52H63z" fill="var(--mark-3)"/></svg>
+      <h1>basicagentpy</h1>
+      <p>Paste the access token printed by <code>basicagentpy-web</code> to unlock the interface.</p>
+      <label class="form-field">
+        <span class="sr-only">Access token</span>
+        <input id="token-input" type="password" autocomplete="off" spellcheck="false" placeholder="access token" required>
+      </label>
+      <p id="token-error" class="form-error" hidden></p>
+      <button class="btn btn-primary" type="submit">Unlock</button>
+    </form>
+  </div>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="#chat">
+        <svg class="brand-mark" viewBox="0 0 120 104" aria-hidden="true" focusable="false"><path d="M57 2 3 102h54z" fill="var(--mark-1)"/><path d="M63 2l23 42H63z" fill="var(--mark-2)"/><path d="M63 50h26l28 52H63z" fill="var(--mark-3)"/></svg>
+        <span class="brand-name">basicagentpy</span>
+      </a>
+      <nav class="site-nav" aria-label="Sections">
+        <ul id="tabs">
+          <li><button type="button" class="tab-link" data-view="chat" aria-current="page">Chat</button></li>
+          <li><button type="button" class="tab-link" data-view="settings">Settings</button></li>
+          <li><button type="button" class="tab-link" data-view="memory">Memory</button></li>
+        </ul>
+      </nav>
+      <div class="header-tools">
+        <span class="chip" id="model-chip" title="Configured model">…</span>
+        <button class="icon-btn theme-toggle" id="theme-toggle" type="button" aria-label="Switch between light and dark theme">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- Chat ---------------------------------------------------------------->
+    <section id="view-chat" class="view">
+      <div class="wrap chat-layout" data-sessions="open">
+        <aside class="chat-aside" id="chat-aside">
+          <div class="aside-head">
+            <h2>Sessions</h2>
+          </div>
+          <ul class="session-list" id="session-list"></ul>
+          <p class="aside-hint" id="sessions-hint"></p>
+        </aside>
+        <div class="chat-main card">
+          <div class="chat-head">
+            <button type="button" class="icon-btn" id="sessions-toggle" aria-label="Toggle the sessions sidebar" aria-controls="chat-aside" aria-expanded="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></svg>
+            </button>
+            <div class="chat-head-text">
+              <h1 class="chat-title" id="chat-title">Chat</h1>
+              <p class="chat-sub" id="chat-sub">…</p>
+            </div>
+            <div class="chat-head-actions">
+              <button type="button" class="btn btn-small btn-ghost" id="new-session">New</button>
+              <button type="button" class="btn btn-small btn-ghost" id="stop" hidden>Stop</button>
+            </div>
+          </div>
+          <div class="messages" id="messages" aria-live="polite"></div>
+          <form class="composer" id="composer">
+            <label class="sr-only" for="prompt">Message</label>
+            <textarea id="prompt" rows="3" placeholder="Ask basicagentpy… (Enter to send, Shift+Enter for a newline)"></textarea>
+            <div class="composer-actions">
+              <span class="context-gauge" id="context-gauge" hidden></span>
+              <span class="composer-hint" id="composer-hint"></span>
+              <button class="btn btn-primary" id="send" type="submit">Send</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- Settings ------------------------------------------------------------>
+    <section id="view-settings" class="view" hidden>
+      <div class="wrap view-wrap">
+        <div class="view-head">
+          <p class="eyebrow">Configuration</p>
+          <h1>Settings</h1>
+          <p class="view-sub">These values are written to <code id="config-path">…</code> and the running agent is reloaded on save. The API key never leaves the machine: it is masked here and preserved unless you type a new one.</p>
+        </div>
+        <div id="settings-status" class="status-line" role="status" hidden></div>
+        <form id="settings-form" class="settings-form" autocomplete="off">
+          <section class="card panel">
+            <div class="panel-head"><h2>Provider</h2></div>
+            <div class="panel-body form-grid">
+              <label class="form-field span-2">
+                <span>Base URL</span>
+                <input data-config="provider.baseUrl" placeholder="http://localhost:11434/v1">
+              </label>
+              <label class="form-field">
+                <span>Model</span>
+                <input data-config="provider.model" placeholder="qwen3:8b">
+              </label>
+              <label class="form-field">
+                <span>API key <span class="form-hint" id="api-key-hint"></span></span>
+                <input data-config="provider.apiKey" type="password" placeholder="leave empty to keep">
+              </label>
+              <label class="form-field">
+                <span>API key env var</span>
+                <input data-config="provider.apiKeyEnv" placeholder="BASICAGENTPY_API_KEY">
+              </label>
+              <label class="form-field">
+                <span>Tool choice</span>
+                <select data-config="provider.toolChoice">
+                  <option value="">(default: omitted)</option>
+                  <option value="auto">auto</option>
+                  <option value="required">required</option>
+                  <option value="none">none</option>
+                </select>
+              </label>
+              <label class="form-field">
+                <span>Temperature</span>
+                <input data-config="provider.temperature" data-number="true" inputmode="decimal" placeholder="0.2">
+              </label>
+              <label class="form-field">
+                <span>Max tokens <span class="form-hint">(empty = provider default)</span></span>
+                <input data-config="provider.maxTokens" data-number="true" inputmode="numeric" placeholder="provider default">
+              </label>
+              <label class="form-field">
+                <span>Provider timeout (ms)</span>
+                <input data-config="provider.timeoutMs" data-number="true" inputmode="numeric" placeholder="120000">
+              </label>
+              <label class="form-field checkbox-field">
+                <input data-config="provider.includeUsage" type="checkbox">
+                <span>Request usage in the stream</span>
+              </label>
+            </div>
+          </section>
+
+          <section class="card panel">
+            <div class="panel-head"><h2>Agent</h2></div>
+            <div class="panel-body form-grid">
+              <label class="form-field">
+                <span>Max iterations</span>
+                <input data-config="agent.maxIterations" data-number="true" inputmode="numeric" placeholder="25">
+              </label>
+              <label class="form-field">
+                <span>Context characters</span>
+                <input data-config="agent.contextChars" data-number="true" inputmode="numeric" placeholder="100000">
+              </label>
+              <label class="form-field">
+                <span>Max tool result characters</span>
+                <input data-config="agent.maxResultChars" data-number="true" inputmode="numeric" placeholder="24000">
+              </label>
+              <label class="form-field">
+                <span>Custom system prompt file</span>
+                <input data-config="agent.systemPromptFile" placeholder="~/.config/basicagentpy/persona.md">
+              </label>
+              <label class="form-field span-2">
+                <span>Custom system prompt <span class="form-hint">(empty = built-in persona)</span></span>
+                <textarea data-config="agent.systemPrompt" rows="4" placeholder="You are basicagentpy…"></textarea>
+              </label>
+            </div>
+          </section>
+
+          <section class="card panel">
+            <div class="panel-head"><h2>File tools</h2></div>
+            <div class="panel-body">
+              <h3 class="panel-sub">Access roots</h3>
+              <p class="form-note">Each root grants access to a directory tree. Paths outside every root are always refused.</p>
+              <div id="roots-list" class="roots-list"></div>
+              <button type="button" class="btn btn-small btn-ghost" id="add-root">Add root</button>
+              <div class="form-grid mt-1">
+                <label class="form-field span-2">
+                  <span>Protected paths <span class="form-hint">(writes always need approval, one per line)</span></span>
+                  <textarea data-config-list="tools.files.protectedPaths" rows="3" placeholder="one path per line"></textarea>
+                </label>
+                <label class="form-field">
+                  <span>Max read bytes</span>
+                  <input data-config="tools.files.maxReadBytes" data-number="true" inputmode="numeric" placeholder="24000">
+                </label>
+                <label class="form-field">
+                  <span>Max write bytes</span>
+                  <input data-config="tools.files.maxWriteBytes" data-number="true" inputmode="numeric" placeholder="1048576">
+                </label>
+                <label class="form-field">
+                  <span>Max list entries</span>
+                  <input data-config="tools.files.maxListEntries" data-number="true" inputmode="numeric" placeholder="200">
+                </label>
+              </div>
+            </div>
+          </section>
+
+          <section class="card panel">
+            <div class="panel-head"><h2>Shell tool</h2></div>
+            <div class="panel-body form-grid">
+              <label class="form-field checkbox-field span-2">
+                <input data-config="tools.shell.enabled" type="checkbox">
+                <span>Enable run_command <span class="form-hint">(off by default; it is not a sandbox)</span></span>
+              </label>
+              <label class="form-field">
+                <span>Approval</span>
+                <select data-config="tools.shell.approval">
+                  <option value="">(default: always)</option>
+                  <option value="always">always</option>
+                  <option value="never">never</option>
+                </select>
+              </label>
+              <label class="form-field">
+                <span>Timeout (ms)</span>
+                <input data-config="tools.shell.timeoutMs" data-number="true" inputmode="numeric" placeholder="30000">
+              </label>
+              <label class="form-field">
+                <span>Max output bytes</span>
+                <input data-config="tools.shell.maxOutputBytes" data-number="true" inputmode="numeric" placeholder="24000">
+              </label>
+              <label class="form-field span-2">
+                <span>Command denylist <span class="form-hint">(one substring per line)</span></span>
+                <textarea data-config-list="tools.shell.denylist" rows="3" placeholder="one per line"></textarea>
+              </label>
+            </div>
+          </section>
+
+          <section class="card panel">
+            <div class="panel-head"><h2>Web tool</h2></div>
+            <div class="panel-body form-grid">
+              <label class="form-field checkbox-field span-2">
+                <input data-config="tools.web.enabled" type="checkbox">
+                <span>Enable fetch_url</span>
+              </label>
+              <label class="form-field checkbox-field span-2">
+                <input data-config="tools.web.allowPrivate" type="checkbox">
+                <span>Allow private addresses <span class="form-hint">(danger: lets fetch_url reach localhost and private networks)</span></span>
+              </label>
+              <label class="form-field">
+                <span>Approval</span>
+                <select data-config="tools.web.approval">
+                  <option value="">(default: never)</option>
+                  <option value="always">always</option>
+                  <option value="never">never</option>
+                </select>
+              </label>
+              <label class="form-field">
+                <span>Timeout (ms)</span>
+                <input data-config="tools.web.timeoutMs" data-number="true" inputmode="numeric" placeholder="15000">
+              </label>
+              <label class="form-field">
+                <span>Max raw bytes</span>
+                <input data-config="tools.web.maxRawBytes" data-number="true" inputmode="numeric" placeholder="512000">
+              </label>
+              <label class="form-field">
+                <span>Max content bytes</span>
+                <input data-config="tools.web.maxBytes" data-number="true" inputmode="numeric" placeholder="24000">
+              </label>
+              <label class="form-field">
+                <span>Max redirects</span>
+                <input data-config="tools.web.maxRedirects" data-number="true" inputmode="numeric" placeholder="5">
+              </label>
+              <label class="form-field">
+                <span>User agent</span>
+                <input data-config="tools.web.userAgent" placeholder="(default)">
+              </label>
+              <label class="form-field">
+                <span>Allowed domains <span class="form-hint">(one per line)</span></span>
+                <textarea data-config-list="tools.web.allowDomains" rows="3" placeholder="one per line"></textarea>
+              </label>
+              <label class="form-field">
+                <span>Denied domains <span class="form-hint">(one per line)</span></span>
+                <textarea data-config-list="tools.web.denyDomains" rows="3" placeholder="one per line"></textarea>
+              </label>
+            </div>
+          </section>
+
+          <section class="card panel">
+            <div class="panel-head"><h2>Skills &amp; memory</h2></div>
+            <div class="panel-body form-grid">
+              <label class="form-field span-2">
+                <span>Skill directories <span class="form-hint">(one per line; empty = defaults)</span></span>
+                <textarea data-config-list="skills.paths" rows="3" placeholder="one path per line"></textarea>
+              </label>
+              <label class="form-field checkbox-field span-2">
+                <input data-config="memory.enabled" type="checkbox">
+                <span>Enable memory <span class="form-hint">(facts, sessions and the audit log)</span></span>
+              </label>
+              <label class="form-field span-2">
+                <span>Data directory</span>
+                <input data-config="memory.dir" placeholder="~/.local/share/basicagentpy">
+              </label>
+            </div>
+          </section>
+
+          <div class="settings-actions">
+            <button type="submit" class="btn btn-primary">Save settings</button>
+            <button type="button" class="btn btn-ghost" id="settings-reload">Reload from disk</button>
+          </div>
+        </form>
+
+        <details class="card panel raw-config">
+          <summary>Advanced: raw config JSON</summary>
+          <div class="panel-body">
+            <p class="form-note">The exact file contents. Saving validates the same way the CLI does; an empty <code>provider.apiKey</code> keeps the stored key.</p>
+            <textarea id="raw-config" rows="18" spellcheck="false"></textarea>
+            <div class="settings-actions">
+              <button type="button" class="btn btn-ghost" id="raw-save">Save raw JSON</button>
+            </div>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- Memory -------------------------------------------------------------->
+    <section id="view-memory" class="view" hidden>
+      <div class="wrap view-wrap">
+        <div class="view-head">
+          <p class="eyebrow">Plain files, no database</p>
+          <h1>Memory</h1>
+          <p class="view-sub">Facts, sessions and the audit log live in <code id="data-dir">…</code> as JSON Lines — readable, greppable, deletable.</p>
+        </div>
+
+        <div class="subtabs" role="tablist" aria-label="Memory views">
+          <button type="button" class="subtab" data-memory="facts" aria-current="true">Facts</button>
+          <button type="button" class="subtab" data-memory="sessions">Sessions</button>
+          <button type="button" class="subtab" data-memory="audit">Audit log</button>
+        </div>
+
+        <div id="memory-facts">
+          <form id="fact-form" class="inline-form">
+            <label class="sr-only" for="fact-key">Fact key</label>
+            <input id="fact-key" placeholder="key" required>
+            <label class="sr-only" for="fact-value">Fact value</label>
+            <input id="fact-value" placeholder="value" required>
+            <button type="submit" class="btn btn-small btn-primary">Add fact</button>
+          </form>
+          <div class="table-scroll">
+            <table class="table">
+              <thead><tr><th>Key</th><th>Value</th><th>Saved</th><th></th></tr></thead>
+              <tbody id="facts-body"></tbody>
+            </table>
+          </div>
+          <p class="empty-note" id="facts-empty" hidden>No facts saved yet. The agent adds them with the remember tool, or you can add one above.</p>
+        </div>
+
+        <div id="memory-sessions" hidden>
+          <div class="split">
+            <ul class="session-list session-list-tall" id="memory-session-list"></ul>
+            <div class="transcript" id="transcript">
+              <p class="empty-note">Pick a session to read its transcript.</p>
+            </div>
+          </div>
+        </div>
+
+        <div id="memory-audit" hidden>
+          <div class="filters">
+            <label class="sr-only" for="audit-tool">Tool</label>
+            <select id="audit-tool"><option value="">All tools</option></select>
+            <label class="sr-only" for="audit-ok">Result</label>
+            <select id="audit-ok">
+              <option value="">All results</option>
+              <option value="true">ok</option>
+              <option value="false">failed</option>
+            </select>
+            <button type="button" class="btn btn-small btn-ghost" id="audit-refresh">Refresh</button>
+            <span class="filters-count" id="audit-count"></span>
+          </div>
+          <div class="table-scroll">
+            <table class="table">
+              <thead><tr><th>Time</th><th>Tool</th><th>Result</th><th>Duration</th><th>Details</th></tr></thead>
+              <tbody id="audit-body"></tbody>
+            </table>
+          </div>
+          <p class="empty-note" id="audit-empty" hidden>No audit entries.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" hidden></div>
+
+  <footer class="site-footer">
+    <div class="wrap footer-bottom">
+      <p>basicagentpy web <span id="footer-version"></span> · GPL-3.0-or-later</p>
+      <p>Conversations, facts and audit logs stay on this machine.</p>
+    </div>
+  </footer>
+</body>
+</html>

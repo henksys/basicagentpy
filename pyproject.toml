@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "basicagentpy"
+description = "A small, dependency-free Python command line agent with file tools, skills and OpenAI-compatible LLM providers."
+readme = "README.md"
+requires-python = ">=3.14"
+license = "GPL-3.0-or-later"
+license-files = ["LICENSE"]
+dynamic = ["version"]
+keywords = ["agent", "cli", "ollama", "openai-compatible", "tools"]
+dependencies = []
+
+[project.scripts]
+basicagentpy = "basicagentpy.cli:main"
+basicagentpy-web = "basicagentpy.web_cli:main"
+basicagentpy-setup = "basicagentpy.setup_cli:main"
+
+[tool.setuptools]
+packages = ["basicagentpy", "basicagentpy.tools", "basicagentpy.web"]
+
+[tool.setuptools.dynamic]
+version = { attr = "basicagentpy.__version__" }

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Henksys">
+  <rect width="128" height="128" rx="24" fill="#06060e"/>
+  <rect x="4" y="4" width="120" height="120" rx="21" fill="none" stroke="#1c1c2b" stroke-width="2"/>
+  <g transform="translate(18 17) scale(0.77)">
+    <path d="M57 2 3 102h54z" fill="#6f7dd9"/>
+    <path d="M63 2l23 42H63z" fill="#9594ff"/>
+    <path d="M63 50h26l28 52H63z" fill="#41435f"/>
+  </g>
+</svg>

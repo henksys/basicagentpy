@@ -1,0 +1,65 @@
+{
+  "provider": {
+    "baseUrl": "http://localhost:11434/v1",
+    "apiKey": "",
+    "apiKeyEnv": "BASICAGENTPY_API_KEY",
+    "model": "qwen3:8b",
+    "temperature": 0.2,
+    "timeoutMs": 120000,
+    "toolChoice": null,
+    "includeUsage": false
+  },
+  "agent": {
+    "maxIterations": 25,
+    "contextChars": 100000,
+    "maxResultChars": 24000,
+    "systemPrompt": "",
+    "systemPromptFile": ""
+  },
+  "tools": {
+    "files": {
+      "roots": [
+        { "path": ".", "access": "rw" },
+        { "path": "~/Projects", "access": "rw" },
+        { "path": "~/.config", "access": "approval" }
+      ],
+      "protectedPaths": [
+        "~/.ssh"
+      ],
+      "maxReadBytes": 24000,
+      "maxWriteBytes": 1048576,
+      "maxListEntries": 200
+    },
+    "shell": {
+      "enabled": false,
+      "approval": "always",
+      "timeoutMs": 30000,
+      "maxOutputBytes": 24000,
+      "denylist": ["rm -rf /", "mkfs", "dd if=", "shutdown", "reboot", "wipefs"]
+    },
+    "web": {
+      "enabled": true,
+      "approval": "never",
+      "timeoutMs": 15000,
+      "maxRawBytes": 512000,
+      "maxBytes": 24000,
+      "maxRedirects": 5,
+      "allowPrivate": false,
+      "denyDomains": [],
+      "allowDomains": [],
+      "userAgent": ""
+    }
+  },
+  "skills": {
+    "paths": [
+      "./skills",
+      "~/.config/basicagentpy/skills",
+      "~/.agents/skills",
+      "~/.claude/skills"
+    ]
+  },
+  "memory": {
+    "enabled": true,
+    "dir": "~/.local/share/basicagentpy"
+  }
+}
