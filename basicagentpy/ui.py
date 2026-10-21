@@ -19,6 +19,16 @@ from typing import Any, TextIO
 from .util import compact_json, preview_json
 
 
+def prompt_label(
+    label: str, *, stream: TextIO, env: dict[str, str] | None = None
+) -> str:
+    """Color the REPL prompt label like tool activity when the stream is a TTY."""
+    env = os.environ if env is None else env
+    if getattr(stream, "isatty", lambda: False)() and not env.get("NO_COLOR"):
+        return f"\x1b[36m{label}\x1b[0m"
+    return label
+
+
 class UI:
     def __init__(
         self,

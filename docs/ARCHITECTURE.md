@@ -396,7 +396,7 @@ defaults, config file, environment (`BASICAGENTPY_API_KEY`,
 
 ## Testing
 
-- `python3.14 -m unittest discover -s tests -v` — 124 offline tests: config
+- `python3.14 -m unittest discover -s tests -v` — 127 offline tests: config
   merging, SSE parsing, the agent loop, the path policy, skills, memory, the
   web server (auth, streaming, approvals, config save), the CLI end to end
   against a fake in-process provider, and the setup questionnaire.

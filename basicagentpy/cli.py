@@ -36,7 +36,7 @@ from .prompt import build_system_prompt
 from .provider import Provider
 from .skills import discover_skills
 from .tools import create_registry
-from .ui import create_ui
+from .ui import create_ui, prompt_label
 from .util import mask
 
 VERSION = __version__
@@ -323,7 +323,7 @@ def main(argv: list[str] | None = None) -> int:
         if state["closed"]:
             return
         target = prompt_target()
-        target.write("basicagentpy> ")
+        target.write(f"{prompt_label('basicagentpy', stream=target)}> ")
         target.flush()
 
     def ask_target() -> Any:
