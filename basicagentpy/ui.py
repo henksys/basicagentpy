@@ -8,7 +8,9 @@
 #   json   every event as one JSON object per line on stdout, suitable for
 #          scripts; human errors still go to stderr
 #
-# Colors are used only when stderr is a TTY and NO_COLOR is not set.
+# Colors are used only when stderr is a TTY, NO_COLOR is not set, and the
+# caller did not pass color=False (--no-color). The REPL prompt decides based
+# on the stream it is written to so redirected output stays clean.
 
 from __future__ import annotations
 
@@ -20,11 +22,15 @@ from .util import compact_json, preview_json
 
 
 def prompt_label(
-    label: str, *, stream: TextIO, env: dict[str, str] | None = None
+    label: str,
+    *,
+    stream: TextIO,
+    env: dict[str, str] | None = None,
+    color: bool = True,
 ) -> str:
     """Color the REPL prompt label like tool activity when the stream is a TTY."""
     env = os.environ if env is None else env
-    if getattr(stream, "isatty", lambda: False)() and not env.get("NO_COLOR"):
+    if color and getattr(stream, "isatty", lambda: False)() and not env.get("NO_COLOR"):
         return f"\x1b[36m{label}\x1b[0m"
     return label
 
@@ -36,12 +42,15 @@ class UI:
         json: bool = False,
         stdout: TextIO | None = None,
         stderr: TextIO | None = None,
+        color: bool = True,
     ) -> None:
         self.json = json
         self.stdout = stdout or sys.stdout
         self.stderr = stderr or sys.stderr
-        self.use_color = bool(getattr(self.stderr, "isatty", lambda: False)()) and not os.environ.get(
-            "NO_COLOR"
+        self.use_color = (
+            bool(color)
+            and bool(getattr(self.stderr, "isatty", lambda: False)())
+            and not os.environ.get("NO_COLOR")
         )
 
     def paint(self, code: str, text: str) -> str:
@@ -109,5 +118,6 @@ def create_ui(
     json: bool = False,
     stdout: TextIO | None = None,
     stderr: TextIO | None = None,
+    color: bool = True,
 ) -> UI:
-    return UI(json=json, stdout=stdout, stderr=stderr)
+    return UI(json=json, stdout=stdout, stderr=stderr, color=color)

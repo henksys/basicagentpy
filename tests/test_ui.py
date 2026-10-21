@@ -40,6 +40,17 @@ class PromptLabelTests(unittest.TestCase):
             "basicagentpy",
         )
 
+    def test_prompt_label_can_be_forced_plain_with_color_false(self):
+        self.assertEqual(
+            prompt_label(
+                "basicagentpy",
+                stream=FakeStream(True),
+                env={},
+                color=False,
+            ),
+            "basicagentpy",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

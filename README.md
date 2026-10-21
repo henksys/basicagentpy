@@ -6,7 +6,7 @@ OpenAI, ...) in a tool-calling loop with file tools, shell access, SKILL.md
 skills and persistent memory.
 
 It is a Python 3.14 port of [basicagent](https://github.com/henksys/basicagent)
-1.3.6, independently versioned at **0.1.1**. It is a full feature port: the
+1.3.6, independently versioned at **0.1.2**. It is a full feature port: the
 same commands, modes, tools, guardrails, OpenAI-compatible provider behaviour,
 web interface and test coverage. It uses only the Python standard library — no
 third-party packages at runtime.
@@ -168,6 +168,7 @@ basicagentpy [options] [prompt]
   --ephemeral       disable memory for this run
   --no-web          disable the fetch_url web tool for this run
   --json            JSON-lines event output (for scripts)
+  --no-color        disable ANSI colors in terminal output
   --yes             auto-approve guarded actions without asking (dangerous)
 ```
 

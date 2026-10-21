@@ -116,8 +116,9 @@ Scripting: `basicagentpy --json "prompt"` emits JSONL events
 web interface streams the same events plus `approval_result` and `aborted`;
 there the `approval` event carries an `id` answered with
 `POST /api/approvals/:id`. Handy flags: `--no-web` (disable web fetch for one
-run), `--continue`, `--session <id>`, `--ephemeral`. REPL commands: `/help
-/new /reload /skills /tools /model [name] /config /quit`.
+run), `--no-color` (disable ANSI colors), `--continue`, `--session <id>`,
+`--ephemeral`. REPL commands: `/help /new /reload /skills /tools /model
+[name] /config /quit`.
 
 From a source checkout, prefix the command with `python3.14 bin/` (for example
 `python3.14 bin/basicagentpy`). Installing with

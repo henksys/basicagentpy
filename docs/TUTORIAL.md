@@ -175,7 +175,7 @@ basicagentpy
 ```
 
 ```
-basicagentpy 0.1.1
+basicagentpy 0.1.2
 model     gemma4:31b @ https://ollama.com/v1
 cwd       /home/you/Projects/basicagentpy
 skills    basicagentpy, example, omarchy, ...
@@ -204,7 +204,7 @@ Commands:
 
 Ctrl+C cancels the running turn, not the program. In a terminal the
 `basicagentpy` part of the prompt is cyan, matching tool-call labels;
-`NO_COLOR=1` disables color.
+`--no-color` or `NO_COLOR=1` disables color.
 
 ## 5. Use the web interface
 
@@ -423,6 +423,6 @@ python3.14 -m unittest discover -s tests -v          # offline suite, no network
 BASICAGENTPY_LIVE=1 python3.14 -m unittest tests.live.test_ollama_cloud -v  # opt-in: also needs OLLAMA_API_KEY_CLOUD
 ```
 
-The offline suite mirrors the original basicagent test suite: 127 tests plus
+The offline suite mirrors the original basicagent test suite: 128 tests plus
 one opt-in Ollama Cloud integration test. It uses a local fake SSE provider
 and never needs network access.

@@ -59,6 +59,7 @@ Options:
   --session <id>     Use (or create) a named conversation session
   --ephemeral        Disable memory for this run
   --no-web           Disable the fetch_url web tool for this run
+  --no-color         Disable ANSI colors in terminal output
   --json             One-shot JSON-lines event output (for scripts)
   --yes              Auto-approve guarded actions without asking (dangerous,
                      in both REPL and one-shot mode)
@@ -93,6 +94,7 @@ def parse_flags(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--yes", action="store_true")
     parser.add_argument("--ephemeral", action="store_true")
     parser.add_argument("--no-web", action="store_true")
+    parser.add_argument("--no-color", action="store_true")
     parser.add_argument("-h", "--help", action="store_true")
     parser.add_argument("-v", "--version", action="store_true")
     parser.add_argument("prompt", nargs="*")
@@ -148,7 +150,7 @@ def main(argv: list[str] | None = None) -> int:
         sys.stderr.write(f"error: {error}\n")
         return 2
 
-    ui = create_ui(json=values.json)
+    ui = create_ui(json=values.json, color=not values.no_color)
     memory = (
         Memory(dir=config["memory"]["dir"])
         if config["memory"]["enabled"] and not values.ephemeral
@@ -323,7 +325,9 @@ def main(argv: list[str] | None = None) -> int:
         if state["closed"]:
             return
         target = prompt_target()
-        target.write(f"{prompt_label('basicagentpy', stream=target)}> ")
+        target.write(
+            f"{prompt_label('basicagentpy', stream=target, color=not values.no_color)}> "
+        )
         target.flush()
 
     def ask_target() -> Any:
