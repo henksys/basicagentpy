@@ -4,10 +4,9 @@ This document explains what every file does, how a conversation turn flows
 through the system, and how to extend it. It is written to be useful both to a
 developer and to an AI agent that is asked to modify this project.
 
-`basicagentpy` is a Python 3.14 port of basicagent 1.3.6. It is an independent
-project with its own config and data directories, but the module boundaries,
-event stream, tool contract, file/web policies and JSONL formats intentionally
-match the original.
+`basicagentpy` runs on Python 3.14 and uses its own config and data
+directories. The module boundaries, event stream, tool contract, file/web
+policies and JSONL formats are documented below.
 
 ## Big picture
 
@@ -80,7 +79,7 @@ an empty `dependencies` list.
 | `basicagentpy/approval.py` | Approval policy for guarded operations (interactive / deny / `--yes`). |
 | `basicagentpy/ui.py` | Terminal rendering for human and JSON modes. |
 | `basicagentpy/util.py` | Small helpers: UTF-8 `bounded`, path expansion, compact JSON, JS-compatible lengths, previews, masking, timestamps. |
-| `basicagentpy/abort.py` | `AbortToken`, the Python equivalent of `AbortSignal`, with close/kill callbacks. |
+| `basicagentpy/abort.py` | `AbortToken`, the cancellation token used for a turn, with close/kill callbacks. |
 | `skills/basicagentpy/SKILL.md` | The bundled self-help skill. |
 | `skills/example/SKILL.md` | Working skill template. |
 | `config.example.json` | Reference configuration. |
@@ -382,7 +381,7 @@ Resuming replays only user/assistant text; tool traffic is not replayed.
   is the mode to embed in other programs.
 
 The REPL runs the turn in a worker thread while a small input thread feeds the
-main event loop. This keeps the original behaviour: output and approval prompts
+main event loop. This keeps the REPL behaviour: output and approval prompts
 stream while the user can still type, busy input gets the "Still working"
 message, and Ctrl+C aborts the active turn. The main event loop handles
 signals by setting an abort flag on the current `AbortToken`.
@@ -408,8 +407,8 @@ defaults, config file, environment (`BASICAGENTPY_API_KEY`,
 ## Design notes
 
 - The core is synchronous; the web server and REPL use threads. This keeps the
-  provider/tool code easy to read and preserves the original's blocking tool
-  semantics. Long-running tools must honor `ctx["signal"]`.
+  provider/tool code easy to read and preserves blocking tool semantics.
+  Long-running tools must honor `ctx["signal"]`.
 - The provider and web-fetch clients deliberately avoid third-party HTTP
   libraries. `http.client` plus explicit timeouts, raw-socket cancellation and
   a pinned connect path cover the project's needs.

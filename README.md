@@ -5,11 +5,8 @@ agent. It runs an OpenAI-compatible model (Ollama, llama.cpp, DeepSeek,
 OpenAI, ...) in a tool-calling loop with file tools, shell access, SKILL.md
 skills and persistent memory.
 
-It is a Python 3.14 port of [basicagent](https://github.com/henksys/basicagent)
-1.3.6, independently versioned at **0.1.2**. It is a full feature port: the
-same commands, modes, tools, guardrails, OpenAI-compatible provider behaviour,
-web interface and test coverage. It uses only the Python standard library — no
-third-party packages at runtime.
+The project is independently versioned at **0.1.2**. It uses only the Python
+standard library — no third-party packages at runtime.
 
 Its tool-calling scope is deliberately small, which keeps it fast, transparent
 and safe. Can be used to study the basics, it has good documentation, and it can
@@ -201,31 +198,10 @@ python3.14 -m unittest discover -s tests -v       # offline tests, fake provider
 BASICAGENTPY_LIVE=1 python3.14 -m unittest tests.live.test_ollama_cloud -v  # opt-in: also needs OLLAMA_API_KEY_CLOUD
 ```
 
-The offline suite is the same set of scenarios as the Node project's suite:
-config merging, SSE parsing, the agent loop, path policy, skills, memory, the
-web server (auth, streaming, approvals, config save), the CLI end to end and
-the setup questionnaire.
-
-## Relationship to basicagent
-
-`basicagentpy` is an independent Python implementation of the same feature set
-as `basicagent` 1.3.6. It uses its own state by default:
-
-| | basicagent | basicagentpy |
-| --- | --- | --- |
-| Config | `~/.config/basicagent/config.json` | `~/.config/basicagentpy/config.json` |
-| Data | `~/.local/share/basicagent` | `~/.local/share/basicagentpy` |
-| Env vars | `BASICAGENT_*` | `BASICAGENTPY_*` |
-| Commands | `basicagent*` | `basicagentpy*` |
-
-The two can be installed and run side by side. Point `--config`/`--data-dir` at
-the same paths if you want to share configuration or conversations.
+The offline suite covers config merging, SSE parsing, the agent loop, path
+policy, skills, memory, the web server (auth, streaming, approvals, config
+save), the CLI end to end and the setup questionnaire.
 
 ## License
 
 GNU General Public License v3.0 or later (GPL-3.0-or-later). See [LICENSE](LICENSE).
-
-basicagentpy is an independent Python implementation of the basicagent feature
-set. No Node code is executed at runtime; the Python sources are a direct port
-of the original project's modules, tests and documentation. The original
-project and this port are licensed GPL-3.0-or-later.

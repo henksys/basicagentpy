@@ -423,6 +423,5 @@ python3.14 -m unittest discover -s tests -v          # offline suite, no network
 BASICAGENTPY_LIVE=1 python3.14 -m unittest tests.live.test_ollama_cloud -v  # opt-in: also needs OLLAMA_API_KEY_CLOUD
 ```
 
-The offline suite mirrors the original basicagent test suite: 128 tests plus
-one opt-in Ollama Cloud integration test. It uses a local fake SSE provider
-and never needs network access.
+The offline suite contains 128 tests plus one opt-in Ollama Cloud integration
+test. It uses a local fake SSE provider and never needs network access.
